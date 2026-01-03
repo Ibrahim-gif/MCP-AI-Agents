@@ -1,0 +1,11 @@
+[project]
+name = "mcp_part_a"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp[cli]>=1.25.0",
+    "openai-agents>=0.6.4",
+    "requests>=2.32.5",
+]

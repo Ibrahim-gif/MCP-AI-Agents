@@ -1,0 +1,21 @@
+{
+  "next_id": 3,
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Schedule meeting with client",
+      "due_date": "2026-01-04T15:00:00",
+      "completed": false,
+      "created_at": "2026-01-03T19:07:58Z",
+      "completed_at": null
+    },
+    {
+      "id": 2,
+      "title": "Prepare presentation slides",
+      "due_date": "2026-01-03T20:00:00",
+      "completed": false,
+      "created_at": "2026-01-03T19:07:58Z",
+      "completed_at": null
+    }
+  ]
+}
