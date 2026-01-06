@@ -5,7 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "azure-ai-projects>=1.0.0",
+    "azure-core-tracing-opentelemetry>=1.0.0b12",
+    "azure-identity>=1.25.1",
+    "azure-monitor-opentelemetry>=1.8.3",
+    "azure-monitor-opentelemetry-exporter>=1.0.0b46",
+    "logfire>=4.16.0",
     "mcp[cli]>=1.25.0",
     "openai-agents>=0.6.4",
+    "opentelemetry-exporter-otlp==1.39.0",
+    "opentelemetry-instrumentation-openai-v2>=2.3b0",
+    "opentelemetry-sdk==1.39.0",
     "requests>=2.32.5",
 ]

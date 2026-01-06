@@ -4,13 +4,40 @@ from agents.mcp import MCPServerStdio
 from datetime import datetime
 from openai import AsyncAzureOpenAI
 from agents import Agent, Runner, set_default_openai_client, OpenAIChatCompletionsModel
+from azure.core.settings import settings
+settings.tracing_implementation = "opentelemetry"
+
+from opentelemetry import trace
+from opentelemetry.sdk.trace import TracerProvider
+from opentelemetry.sdk.trace.export import SimpleSpanProcessor, ConsoleSpanExporter
+from opentelemetry.instrumentation.openai_v2 import OpenAIInstrumentor
 import os
 from dotenv import load_dotenv
 
+import logfire
+
+os.environ["OTEL_EXPORTER_OTLP_TRACES_ENDPOINT"] = "http://localhost:4318/v1/traces"
+
+logfire.configure(
+    service_name="opentelemetry-instrumentation-openai-agents-logfire",
+    send_to_logfire=False,
+)
+logfire.instrument_openai_agents()
+
 load_dotenv()  # reads .env into environment variables
+
+# Setup tracing to console
+span_exporter = ConsoleSpanExporter()
+tracer_provider = TracerProvider()
+tracer_provider.add_span_processor(SimpleSpanProcessor(span_exporter))
+trace.set_tracer_provider(tracer_provider)
+
+OpenAIInstrumentor().instrument()
 
 async def main():
     params = {"command": "uv", "args": ["run", "server.py"]}
+    os.environ["AZURE_TRACING_GEN_AI_CONTENT_RECORDING_ENABLED"] = "true" # False by default
+
     async with MCPServerStdio(params=params, client_session_timeout_seconds=30) as server:
         mcp_tools = await server.list_tools()
         request = "Add a task to schedule a meeting with the client tomorrow at 3 PM and another task to prepare the presentation slides by tonight at 8 PM."
@@ -18,10 +45,13 @@ async def main():
 
         time_now = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
         instructions = "You are an expert task management agent for the user. You help the user by breaking down their requests into manageable tasks and executing them efficiently. The current time is " + time_now + "."
-        
-        agent = initialize_agent(name="Task Agent", instructions=instructions, model=model, mcp_servers=[server])
-        result = await Runner.run(agent, request)
-        print(result.final_output)
+        # Start tracing
+        tracer = trace.get_tracer(__name__)
+
+        with tracer.start_as_current_span("Task-Manager-Tracing"):
+            agent = initialize_agent(name="Task Agent", instructions=instructions, model=model, mcp_servers=[server])
+            result = await Runner.run(agent, request)
+            print(result.final_output)
 
 def initialize_agent(name, instructions, model, mcp_servers):
     from agents import set_tracing_disabled
