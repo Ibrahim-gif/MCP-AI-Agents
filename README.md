@@ -64,18 +64,26 @@ Create a `.env` file in the project root:
 ```env
 AZURE_OPENAI_API_KEY=your_key_here
 AZURE_OPENAI_ENDPOINT=https://your-resource-name.openai.azure.com
-
+```
 ---
 
 ## 5) Run 
-# a) Create a virtual environment
-```uv venv
+### a) Create a virtual environment
+```
+uv venv
+```
 
-# b) Activate it
-```.\.venv\Scripts\Activate.ps1
+### b) Activate it
+```
+.\.venv\Scripts\Activate.ps1
+```
 
-# c) Install dependencies
-```uv pip install -r requirements.txt
+### c) Install dependencies
+```
+uv pip install -r requirements.txt
+```
 
-# d) Run
-```python .\client.py
+### d) Run
+```
+uv run .\client.py
+```
